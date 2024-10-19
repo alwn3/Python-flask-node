@@ -1,0 +1,33 @@
+services:
+  nodeapp:
+    build: ./Nodeapp
+    container_name: Nodeapp1
+    ports:
+      - 3000
+    restart: always
+    networks:
+      - python-node
+  flaskapp:
+    build: ./Python-flask
+    container_name: Flaskapp
+    ports:
+      - 5000
+    restart: always
+    networks:
+      - python-node
+  nginx:
+    image: nginx:mainline-alpine3.20-slim
+    container_name: nginx
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+      - ./Static:/var/www/html
+    ports:
+      - 80:80
+    depends_on:
+      - nodeapp
+      - flaskapp
+    networks:
+      - python-node
+networks:
+  python-node:
+    driver: bridge
